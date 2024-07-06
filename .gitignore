@@ -1,0 +1,17 @@
+# Build directory
+build/
+
+# Components
+dependencies.lock
+managed_components/
+
+# SDK configuration
+sdkconfig
+sdkconfig.old
+
+# Never ever secrets
+*.pem
+
+# Ignore generated file
+index.html
+

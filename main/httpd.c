@@ -247,6 +247,7 @@ static esp_err_t update_post_handler(httpd_req_t *req)
     err = ota_init();
     if ( err != ESP_OK ) {
         flush_post_data(req);
+        httpd_resp_send(req, "Update failed", HTTPD_RESP_USE_STRLEN);
         return err;
     }
 
@@ -259,6 +260,7 @@ static esp_err_t update_post_handler(httpd_req_t *req)
                 /* Retry receiving if timeout occurred */
                 continue;
             }
+            httpd_resp_send(req, "Update failed", HTTPD_RESP_USE_STRLEN);
             return ota_finish( ESP_FAIL );
         }
         remaining -= ret;
@@ -266,10 +268,12 @@ static esp_err_t update_post_handler(httpd_req_t *req)
         err = ota_write( bigbuf, ret );
         if ( err != ESP_OK ) {
             flush_post_data(req);
+            httpd_resp_send(req, "Update failed", HTTPD_RESP_USE_STRLEN);
             return err;
         }
     }
 
+    httpd_resp_send(req, "Update complete", HTTPD_RESP_USE_STRLEN);
     return ota_finish( ESP_OK );
 }
 

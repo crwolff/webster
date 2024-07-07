@@ -28,5 +28,7 @@ else()
     string(STRIP "${GIT_BRANCH}" GIT_BRANCH)
 endif()
 
-configure_file( ../main/www-data/index.html.in ../main/www-data/index.html )
+#configure_file( ../main/www-data/index.html.in ../main/www-data/index.html )
+file(READ ../main/www-data/index.html.in IFILE)
+file(CONFIGURE OUTPUT ../main/www-data/index.html CONTENT "${IFILE}")
 

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.button {
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+.buttonc {
+  background-color: white; 
+  color: black; 
+  border: 2px solid #4CAF50;
+}
+
+.buttonc:hover {
+  background-color: #4CAF50;
+  color: white;
+}
+
+</style>
+</head>
+<body>
+<h1>Configuration</h2>
+<p><a href="config.html">Configuration</a></p>
+<br>
+<h1>Select boot sequence</h2>
+<button class="button buttonc" onclick="clicky('b1');">Windows</button>
+<button class="button buttonc" onclick="clicky('b2');">Linux</button>
+<button class="button buttonc" onclick="clicky('b4');">Setup</button>
+<br>
+<p><a href="https://www.github.com/crwolff/webster">WebSter v0.9 (${GIT_REV}${GIT_DIFF})</a></p>
+
+<script>
+  function clicky(name) {
+    var form = document.createElement('form');
+    form.setAttribute('method', 'post');
+    form.setAttribute('action', 'ctrl?key='+name);
+    form.style.display = 'hidden';
+    document.body.appendChild(form)
+    form.submit();
+  }
+</script>
+</body>
+</html>
+

@@ -1,0 +1,5 @@
+# esp32s2 has 4MB, esp32s3 has 8MB
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+
+# Enable OTA partitions
+CONFIG_PARTITION_TABLE_TWO_OTA=y

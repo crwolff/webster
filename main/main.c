@@ -19,6 +19,7 @@ extern int32_t web_server_down;
 /* Forware declaration */
 void nvs_init(void);
 void wifi_init(void);
+void httpd_init(void);
 
 /* Main application */
 void app_main(void)
@@ -28,6 +29,9 @@ void app_main(void)
 
     // Initialize the WiFi
     wifi_init();
+
+    // Start web server
+    httpd_init();
 
     // Watch for connection loss and try reconnect
     while (1) {

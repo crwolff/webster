@@ -14,10 +14,9 @@
 
 static const char *TAG = "webster";
 
-extern int32_t web_server_down;
-
 /* Forware declaration */
 void nvs_init(void);
+void usb_init(void);
 void wifi_init(void);
 void httpd_init(void);
 
@@ -26,6 +25,9 @@ void app_main(void)
 {
     // Initialize NVS subsystem
     nvs_init();
+
+    // Connect USB
+    usb_init();
 
     // Initialize the WiFi
     wifi_init();

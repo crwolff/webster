@@ -20,8 +20,6 @@
 
 static const char *TAG = "httpd";
 
-int32_t web_server_down = 0;
-
 esp_err_t ota_init(void);
 esp_err_t ota_write(char *, int);
 esp_err_t ota_finish(esp_err_t);
@@ -344,7 +342,6 @@ static void disconnect_handler(void* arg, esp_event_base_t event_base,
         stop_webserver(*server);
         *server = NULL;
     }
-    web_server_down = 1;
 }
 
 static void connect_handler(void* arg, esp_event_base_t event_base,

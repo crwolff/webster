@@ -23,6 +23,9 @@ void httpd_init(void);
 /* Main application */
 void app_main(void)
 {
+    // Turn on event loop
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+
     // Initialize NVS subsystem
     nvs_init();
 

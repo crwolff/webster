@@ -67,33 +67,44 @@ static void event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-void wifi_init_sta(void)
+void wifi_init(void)
 {
+    static int initialized = 0;
     size_t nvs_len;
     char wifi_ssid[33];
     char wifi_pass[65];
 
-    s_wifi_event_group = xEventGroupCreate();
+    if (!initialized) {
+        // Only do this the first time through
+        s_wifi_event_group = xEventGroupCreate();
+        ESP_ERROR_CHECK(esp_netif_init());
+        esp_netif_create_default_wifi_sta();
 
-    ESP_ERROR_CHECK(esp_netif_init());
-
-    esp_netif_create_default_wifi_sta();
-
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-
-    esp_event_handler_instance_t instance_any_id;
-    esp_event_handler_instance_t instance_got_ip;
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+        esp_event_handler_instance_t instance_any_id;
+        esp_event_handler_instance_t instance_got_ip;
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
                                                         ESP_EVENT_ANY_ID,
                                                         &event_handler,
                                                         NULL,
                                                         &instance_any_id));
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
                                                         IP_EVENT_STA_GOT_IP,
                                                         &event_handler,
                                                         NULL,
                                                         &instance_got_ip));
+        initialized = 1;
+    } else {
+        // If previously initialized, disconnect and try again
+        ESP_LOGI(TAG, "Disconnect WiFi");
+        ESP_ERROR_CHECK(esp_wifi_stop());
+        ESP_ERROR_CHECK(esp_wifi_deinit());
+        vTaskDelay(pdMS_TO_TICKS(10000));   // allow AP time to recognize disconnect
+        ESP_LOGI(TAG, "Re-initialize WiFi");
+    }
+
+    // Initialize WiFi
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
     // Get SSID/password from NVS
     nvs_handle_t nvsHandle;
@@ -169,22 +180,4 @@ void wifi_init_sta(void)
     } else {
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
-}
-
-void wifi_init(void)
-{
-    static int initialized = 0;
-
-    // If already connected, disconnect and try again
-    if ( initialized ) {
-        ESP_LOGI(TAG, "Disconnect WiFi");
-        ESP_ERROR_CHECK(esp_wifi_stop());
-        ESP_ERROR_CHECK(esp_wifi_deinit());
-        vTaskDelay(pdMS_TO_TICKS(10000));   // allow AP time to recognize disconnect
-        ESP_LOGI(TAG, "Re-initialize WiFi");
-    }
-
-    // Initialized WiFi station
-    wifi_init_sta();
-    initialized = 1;
 }

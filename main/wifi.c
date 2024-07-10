@@ -45,6 +45,15 @@ static const char *TAG = "wifi";
 static int s_retry_num = 0;
 
 
+bool wifi_isup(void)
+{
+    EventBits_t bits = xEventGroupGetBits(s_wifi_event_group);
+    if (bits & WIFI_FAIL_BIT)
+        return false;
+    else
+        return true;
+}
+
 static void event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
@@ -56,6 +65,7 @@ static void event_handler(void* arg, esp_event_base_t event_base,
             s_retry_num++;
             ESP_LOGI(TAG, "retry to connect to the AP");
         } else {
+            s_retry_num = 0;
             xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
         }
         ESP_LOGI(TAG,"connect to the AP fail");
@@ -100,6 +110,8 @@ void wifi_init(void)
         ESP_ERROR_CHECK(esp_wifi_deinit());
         vTaskDelay(pdMS_TO_TICKS(10000));   // allow AP time to recognize disconnect
         ESP_LOGI(TAG, "Re-initialize WiFi");
+        xEventGroupClearBits(s_wifi_event_group,
+                WIFI_CONNECTED_BIT | WIFI_FAIL_BIT);
     }
 
     // Initialize WiFi

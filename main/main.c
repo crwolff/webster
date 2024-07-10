@@ -18,6 +18,7 @@ static const char *TAG = "webster";
 /* Forware declaration */
 void nvs_init(void);
 void usb_init(void);
+bool wifi_isup(void);
 void wifi_init(void);
 void httpd_init(void);
 
@@ -42,5 +43,9 @@ void app_main(void)
     // Watch for connection loss and try reconnect
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(1000));
+        if (!wifi_isup()) {     // WiFi failed, re-init
+            ESP_LOGI(TAG, "WiFi down, attempting restart");
+            wifi_init();
+        }
     }
 }

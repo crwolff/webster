@@ -20,6 +20,7 @@ idf.py menuconfig
 ## Build instructions
 ```
 source ../esp-idf/export.sh
+idf.py fullclean
 idf.py build
 idf.py -p /dev/ttyUSB0 erase-flash
 idf.py -p /dev/ttyUSB0 flash monitor
